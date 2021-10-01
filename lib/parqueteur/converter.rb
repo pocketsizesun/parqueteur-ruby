@@ -4,6 +4,10 @@ module Parqueteur
   class Converter
     attr_reader :schema
 
+    def self.inline(&block)
+      Class.new(self, &block)
+    end
+
     def self.columns
       @columns ||= Parqueteur::ColumnCollection.new
     end

@@ -13,7 +13,7 @@ module Parqueteur
           else
             arg.split("\n")
           end
-        when Array
+        when Array, Enumerator
           arg
         end,
         options
@@ -36,7 +36,7 @@ module Parqueteur
           JSON.parse(@source.read).each(&block)
         end
         @source.rewind
-      when Array
+      when Array, Enumerator
         @source.each(&block)
       end
     end
