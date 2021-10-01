@@ -29,7 +29,7 @@ GEM
       red-arrow (= 5.0.0)
 
 PLATFORMS
-  x86_64-darwin-20
+  ruby
 
 DEPENDENCIES
   parqueteur!
