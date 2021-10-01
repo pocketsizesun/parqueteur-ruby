@@ -16,4 +16,6 @@ data = [
   { 'id' => 3, 'reference' => 'coucou', 'hash' => { 'e' => 'f' }, 'valid' => true }
 ]
 
-puts Foo.convert(data, output: :io)
+chunked_converter = Parqueteur::ChunkedConverter.new(data, Foo)
+pp chunked_converter.write_files('test')
+# puts Foo.convert(data, output: :io)
