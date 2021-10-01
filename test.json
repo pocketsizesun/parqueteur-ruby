@@ -1,0 +1,1 @@
+[{"id":1,"reference":"coucou","hash":{"a":"b"},"valid":true,"hash2":{},"numbers":[1,2,3],"map_array":[]},{"id":2,"reference":"coucou","hash":{"c":"d"},"valid":false,"hash2":{},"numbers":[4,5,6],"map_array":[]},{"id":3,"reference":"coucou","hash":{"e":"f"},"valid":true,"hash2":{"x":[1,2,3]},"numbers":[7,8,9],"map_array":[{"x":"y"}]}]
