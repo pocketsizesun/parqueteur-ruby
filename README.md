@@ -1,15 +1,24 @@
 # Parqueteur
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/parqueteur`. To experiment with that code, run `bin/console` for an interactive prompt.
+Parqueteur enables you to generate Apache Parquet files from raw data.
 
-TODO: Delete this and the text above, and describe your gem
+## Dependencies
 
+Since I only tested Parqueteur on Ubuntu, I don't have any install scripts for other operating systems.
+### Debian/Ubuntu packages
+- libgirepository1.0-dev
+- libarrow-dev
+- libarrow-glib-dev
+- libparquet-dev
+- libparquet-glib-dev
+
+You can check `scripts/apache-arrow-ubuntu-install.sh` script for a quick way to install all of them.
 ## Installation
 
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'parqueteur'
+gem 'parqueteur', '~> 1.0'
 ```
 
 And then execute:
@@ -22,14 +31,22 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Parqueteur provides an elegant way to generate Apache Parquet files from a defined schema.
+```ruby
+class FooParquetConverter < Parqueteur::Converter
+  column :id, :bigint
+  column :reference, :string
+end
 
-## Development
+data = [
+  { 'id' => 1, 'reference' => 'hello world 1' },
+  { 'id' => 2, 'reference' => 'hello world 2' },
+  { 'id' => 3, 'reference' => 'hello world 3' }
+]
 
-After checking out the repo, run `bin/setup` to install dependencies. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
-
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+FooParquetConverter.convert_to(data, 'hello_world.parquet')
+```
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/parqueteur.
+Bug reports and pull requests are welcome on GitHub at https://github.com/pocketsizesun/parqueteur-ruby.

@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Julien D."]
   spec.email         = ["julien@pocketsizesun.com"]
   spec.license       = 'Apache-2.0'
-  spec.summary       = 'Parqueteur - A Ruby gem that convert JSON to Parquet'
-  spec.description   = 'Convert JSON to Parquet'
+  spec.summary       = 'Parqueteur - A Ruby gem that convert data to Parquet'
+  spec.description   = 'Convert data to Parquet'
   spec.homepage      = 'https://github.com/pocketsizesun/parqueteur-ruby'
   spec.required_ruby_version = Gem::Requirement.new(">= 2.3.0")
 

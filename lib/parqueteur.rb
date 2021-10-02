@@ -3,6 +3,7 @@
 require 'json'
 require 'singleton'
 require 'tempfile'
+require 'parquet'
 
 require_relative 'parqueteur/version'
 require 'parqueteur/column'
@@ -20,7 +21,6 @@ require 'parqueteur/types/map_type'
 require 'parqueteur/types/string_type'
 require 'parqueteur/types/struct_type'
 require 'parqueteur/types/timestamp_type'
-require 'parquet'
 
 module Parqueteur
   class Error < StandardError; end
