@@ -41,12 +41,14 @@ module Parqueteur
       @compression = kwargs.fetch(:compression, nil)&.to_sym
     end
 
-    def split(size)
+    def split(size, batch_size: nil, compression: nil)
       Enumerator.new do |arr|
+        options = {
+          batch_size: batch_size || @batch_size,
+          compression: compression || @compression
+        }
         @input.each_slice(size) do |records|
-          local_converter = self.class.new(
-            records, batch_size: @batch_size, compression: @compression
-          )
+          local_converter = self.class.new(records, **options)
           file = local_converter.to_tmpfile
           arr << file
           file.close
@@ -55,23 +57,31 @@ module Parqueteur
       end
     end
 
-    def split_by_io(size)
+    def split_by_io(size, batch_size: nil, compression: nil)
       Enumerator.new do |arr|
+        options = {
+          batch_size: batch_size || @batch_size,
+          compression: compression || @compression
+        }
         @input.each_slice(size) do |records|
-          local_converter = self.class.new(records)
+          local_converter = self.class.new(records, **options)
           arr << local_converter.to_io
         end
       end
     end
 
-    def write(path)
+    def write(path, batch_size: nil, compression: nil)
+      compression = @compression if compression.nil?
+      batch_size = @batch_size if batch_size.nil?
       arrow_schema = self.class.columns.arrow_schema
       writer_properties = Parquet::WriterProperties.new
-      writer_properties.set_compression(@compression) unless @compression.nil?
+      if !compression.nil? && compression != false
+        writer_properties.set_compression(compression)
+      end
 
       Arrow::FileOutputStream.open(path, false) do |output|
         Parquet::ArrowFileWriter.open(arrow_schema, output, writer_properties) do |writer|
-          @input.each_slice(@batch_size) do |records|
+          @input.each_slice(batch_size) do |records|
             arrow_table = build_arrow_table(records)
             writer.write_table(arrow_table, 1024)
           end
@@ -81,32 +91,32 @@ module Parqueteur
       true
     end
 
-    def to_tmpfile
+    def to_tmpfile(options = {})
       tempfile = Tempfile.new
       tempfile.binmode
-      write(tempfile.path)
+      write(tempfile.path, **options)
       tempfile.rewind
       tempfile
     end
 
-    def to_io
-      tmpfile = to_tmpfile
+    def to_io(options = {})
+      tmpfile = to_tmpfile(options)
       strio = StringIO.new(tmpfile.read)
       tmpfile.close
       tmpfile.unlink
       strio
     end
 
-    def to_arrow_table
-      file = to_tmpfile
+    def to_arrow_table(options = {})
+      file = to_tmpfile(options)
       table = Arrow::Table.load(file.path, format: :parquet)
       file.close
       file.unlink
       table
     end
 
-    def to_blob
-      to_io.read
+    def to_blob(options = {})
+      to_tmpfile(options).read
     end
 
     private

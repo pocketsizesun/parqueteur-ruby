@@ -3,7 +3,7 @@ require 'parqueteur'
 require 'securerandom'
 require 'benchmark'
 
-class Foo < Parqueteur::Converter
+class FooParquetConverter < Parqueteur::Converter
   column :id, :bigint
   column :reference, :string
   column :hash, :map, key: :string, value: :string
@@ -48,5 +48,9 @@ data = 10000.times.collect do |i|
 end
 puts "data generation OK"
 
-path = 'tmp/test.parquet'
-Foo.convert_to(data, path, compression: :gzip)
+# initialize Converter with Parquet GZIP compression mode
+converter = FooParquetConverter.new(data, compression: :gzip)
+
+# write result to file
+converter.write('tmp/example.gzip-compressed.parquet')
+converter.write('tmp/example.no-gzip.parquet', compression: false)

@@ -7,8 +7,12 @@ module Parqueteur
     def self.registered_types
       @registered_types ||= {
         array: Parqueteur::Types::ArrayType,
+        bigdecimal: Parqueteur::Types::Decimal256Type,
         bigint: Parqueteur::Types::Int64Type,
         boolean: Parqueteur::Types::BooleanType,
+        decimal: Parqueteur::Types::Decimal128Type,
+        decimal128: Parqueteur::Types::Decimal128Type,
+        decimal256: Parqueteur::Types::Decimal256Type,
         int32: Parqueteur::Types::Int32Type,
         int64: Parqueteur::Types::Int64Type,
         integer: Parqueteur::Types::Int32Type,
