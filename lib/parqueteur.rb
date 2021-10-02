@@ -2,9 +2,9 @@
 
 require 'json'
 require 'singleton'
+require 'tempfile'
 
-require_relative "parqueteur/version"
-require 'parqueteur/chunked_converter'
+require_relative 'parqueteur/version'
 require 'parqueteur/column'
 require 'parqueteur/column_collection'
 require 'parqueteur/converter'

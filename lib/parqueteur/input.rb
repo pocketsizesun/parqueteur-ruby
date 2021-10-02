@@ -4,40 +4,25 @@ module Parqueteur
   class Input
     include Enumerable
 
-    def self.from(arg, options = {})
-      new(
-        case arg
-        when String
-          if File.exist?(arg)
-            File.new(arg, 'r')
-          else
-            arg.split("\n")
-          end
-        when Enumerable
-          arg
-        end,
-        options
-      )
+    def self.from(arg)
+      return arg if arg.is_a?(self)
+
+      new(arg)
     end
 
-    def initialize(source, options = {})
+    def initialize(source)
+      unless source.is_a?(Enumerable)
+        raise ArgumentError, 'Enumerable object expected'
+      end
+
       @source = source
-      @options = options
     end
 
     def each(&block)
-      case @source
-      when File
-        if @options.fetch(:json_newlines, true) == true
-          @source.each_line do |line|
-            yield(JSON.parse(line.strip))
-          end
-        else
-          JSON.parse(@source.read).each(&block)
-        end
-        @source.rewind
-      when Enumerable
+      if block_given?
         @source.each(&block)
+      else
+        @source.to_enum(:each)
       end
     end
   end
