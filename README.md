@@ -6,11 +6,11 @@ Parqueteur enables you to generate Apache Parquet files from raw data.
 
 Since I only tested Parqueteur on Ubuntu, I don't have any install scripts for other operating systems.
 ### Debian/Ubuntu packages
-- libgirepository1.0-dev
-- libarrow-dev
-- libarrow-glib-dev
-- libparquet-dev
-- libparquet-glib-dev
+- `libgirepository1.0-dev`
+- `libarrow-dev`
+- `libarrow-glib-dev`
+- `libparquet-dev`
+- `libparquet-glib-dev`
 
 You can check `scripts/apache-arrow-ubuntu-install.sh` script for a quick way to install all of them.
 ## Installation
