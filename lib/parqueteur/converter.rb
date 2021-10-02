@@ -20,7 +20,7 @@ module Parqueteur
       @transforms ||= []
     end
 
-    def self.transform(method_name, &block)
+    def self.transform(method_name = nil, &block)
       transforms << (method_name || block)
     end
 
