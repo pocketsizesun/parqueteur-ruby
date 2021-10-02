@@ -2,60 +2,46 @@
 
 module Parqueteur
   class TypeResolver
-    def self.resolve(*args)
-      new.resolve(*args)
+    include Singleton
+
+    def self.registered_types
+      @registered_types ||= {
+        array: Parqueteur::Types::ArrayType,
+        bigint: Parqueteur::Types::Int64Type,
+        boolean: Parqueteur::Types::BooleanType,
+        int32: Parqueteur::Types::Int32Type,
+        int64: Parqueteur::Types::Int64Type,
+        integer: Parqueteur::Types::Int32Type,
+        map: Parqueteur::Types::MapType,
+        string: Parqueteur::Types::StringType,
+        struct: Parqueteur::Types::StructType,
+        timestamp: Parqueteur::Types::TimestampType
+      }
     end
 
-    def resolve(type, options = {})
-      case type
-      when :array
-        elements_opt = options.fetch(:elements)
-        Arrow::ListDataType.new(
-          if elements_opt.is_a?(Hash)
-            resolve(elements_opt.fetch(:type), elements_opt)
-          else
-            resolve(elements_opt)
-          end
-        )
-      when :boolean
-        Arrow::BooleanDataType.new
-      when :integer
-        if options.fetch(:unsigned, false) == true
-          Arrow::UInt32DataType.new
-        else
-          Arrow::Int32DataType.new
-        end
-      when :long
-        if options.fetch(:unsigned, false) == true
-          Arrow::UInt64DataType.new
-        else
-          Arrow::Int64DataType.new
-        end
-      when :timestamp
-        Arrow::TimestampDataType.new(
-          options.fetch(:unit, :second)
-        )
-      when :string
-        Arrow::StringDataType.new
-      when :map
-        map_value = options.fetch(:value)
-        Arrow::MapDataType.new(
-          resolve(options.fetch(:key)),
-          if map_value.is_a?(Hash)
-            resolve(map_value.fetch(:type), map_value)
-          else
-            resolve(map_value)
-          end
-        )
+    def self.register_type(type, klass)
+      registered_types[type] = klass
+    end
+
+    def self.resolve(*args, &block)
+      instance.resolve(*args, &block)
+    end
+
+    def resolve(type, options = {}, &block)
+      if type.is_a?(Symbol)
+        resolve_from_symbol(type, options, &block)
       else
-        raise Error, "unknown type: #{type}"
+        type.new(options, &block)
       end
     end
+
+    private
+
+    def resolve_from_symbol(type, options, &block)
+      type_klass = self.class.registered_types.fetch(type.to_sym, nil)
+      raise Parqueteur::TypeNotFound, type if type_klass.nil?
+
+      type_klass.new(options, &block)
+    end
   end
-end
-
-private
-
-def build_arrow_type(type, options = {})
-
 end

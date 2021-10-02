@@ -12,8 +12,8 @@ module Parqueteur
       @columns ||= Parqueteur::ColumnCollection.new
     end
 
-    def self.column(name, type, options = {})
-      columns.add(Parqueteur::Column.new(name, type, options))
+    def self.column(name, type, options = {}, &block)
+      columns.add(Parqueteur::Column.new(name, type, options, &block))
     end
 
     def self.transforms
@@ -69,7 +69,10 @@ module Parqueteur
     def to_arrow_table
       transforms = self.class.transforms
 
-      chunks = {}
+      chunks = self.class.columns.each_with_object({}) do |column, hash|
+        hash[column.name] = []
+      end
+      items_count = 0
       @input.each_slice(100) do |items|
         values = self.class.columns.each_with_object({}) do |column, hash|
           hash[column.name] = []
@@ -98,20 +101,27 @@ module Parqueteur
 
         values.each_with_object(chunks) do |item, hash|
           column = self.class.columns.find(item[0])
-          hash[item[0]] ||= []
           hash[item[0]].push(
-            Parqueteur::ValueArrayBuilder.build(
-              item[1], column.type, column.options
-            )
+            column.type.build_value_array(item[1])
           )
         end
+
+        items_count += items.length
       end
 
-      Arrow::Table.new(
-        chunks.transform_values! do |value|
-          Arrow::ChunkedArray.new(value)
-        end
-      )
+      if items_count > 0
+        Arrow::Table.new(
+          chunks.transform_values! do |value|
+            Arrow::ChunkedArray.new(value)
+          end
+        )
+      else
+        Arrow::Table.new(
+          self.class.columns.each_with_object({}) do |column, hash|
+            hash[column.name] = column.type.build_value_array([])
+          end
+        )
+      end
     end
   end
 end

@@ -4,31 +4,14 @@ module Parqueteur
   class Column
     attr_reader :name, :type, :options
 
-    def initialize(name, type, options = {})
+    def initialize(name, type, options = {}, &block)
       @name = name.to_s
-      @type = type
+      @type = Parqueteur::TypeResolver.resolve(type, options, &block)
       @options = options
     end
 
     def arrow_type
-      @arrow_type ||= Parqueteur::TypeResolver.resolve(@type, @options)
-    end
-
-    def cast(value)
-      case @type
-      when :string then value.to_s
-      when :boolean then value == true
-      when :integer then value.to_i
-      when :long then value.to_i
-      when :timestamp
-        case value
-        when String then Time.parse(value).to_i
-        when Integer then value
-        else
-          raise ArgumentError, "Unable to cast '#{value}' to timestamp"
-        end
-      when :map then value
-      end
+      @type.arrow_type
     end
 
     def to_arrow_field

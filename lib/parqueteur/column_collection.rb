@@ -4,9 +4,16 @@ module Parqueteur
   class ColumnCollection
     include Enumerable
 
+    attr_reader :column_names
+
     def initialize
       @columns = []
+      @column_names = []
       @columns_idx = {}
+    end
+
+    def key?(key)
+      @columns_idx.key?(key)
     end
 
     def each(&block)
@@ -17,6 +24,7 @@ module Parqueteur
       unless @columns_idx.key?(column.name)
         @columns_idx[column.name] = column
         @columns << column
+        @column_names << column.name
       end
 
       true
