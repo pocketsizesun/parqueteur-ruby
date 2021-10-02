@@ -4,6 +4,8 @@ module Parqueteur
   class Converter
     attr_reader :schema
 
+    DEFAULT_BATCH_SIZE = 25
+
     def self.inline(&block)
       Class.new(self, &block)
     end
@@ -24,8 +26,8 @@ module Parqueteur
       transforms << (method_name || block)
     end
 
-    def self.convert(input, output: nil)
-      converter = new(input)
+    def self.convert(input, output: nil, batch_size: DEFAULT_BATCH_SIZE)
+      converter = new(input, bactch_size: batch_size)
       if !output.nil?
         converter.write(output)
       else
@@ -35,6 +37,7 @@ module Parqueteur
 
     def initialize(input, options = {})
       @input = Parqueteur::Input.from(input, options)
+      @batch_size = options.fetch(:batch_size, DEFAULT_BATCH_SIZE)
     end
 
     def write(output)
@@ -72,8 +75,9 @@ module Parqueteur
       chunks = self.class.columns.each_with_object({}) do |column, hash|
         hash[column.name] = []
       end
+
       items_count = 0
-      @input.each_slice(100) do |items|
+      @input.each_slice(@batch_size) do |items|
         values = self.class.columns.each_with_object({}) do |column, hash|
           hash[column.name] = []
         end
