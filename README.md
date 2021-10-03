@@ -1,5 +1,7 @@
 # Parqueteur
 
+[![Gem Version](https://badge.fury.io/rb/parqueteur.svg)](https://badge.fury.io/rb/parqueteur)
+
 Parqueteur enables you to generate Apache Parquet files from raw data.
 
 ## Dependencies
