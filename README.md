@@ -37,7 +37,8 @@ Or install it yourself as:
 ## Usage
 
 Parqueteur provides an elegant way to generate Apache Parquet files from a defined schema.
-Converters accepts any object that implements `Enumerable`.
+
+Converters accepts any object that implements `Enumerable` as data source.
 
 ### Working example
 
@@ -48,27 +49,12 @@ class FooParquetConverter < Parqueteur::Converter
   column :id, :bigint
   column :reference, :string
   column :datetime, :timestamp
-
-  transform do |item|
-    item.merge(
-      'datetime' => Time.now
-    )
-  end
-
-  transform :add_beers
-
-  private
-
-  def add_beers(item)
-    item['beers_count'] += rand(1..3)
-    item
-  end
 end
 
 data = [
-  { 'id' => 1, 'reference' => 'hello world 1', 'beers_count' => 0 },
-  { 'id' => 2, 'reference' => 'hello world 2', 'beers_count' => 0 },
-  { 'id' => 3, 'reference' => 'hello world 3', 'beers_count' => 0 }
+  { 'id' => 1, 'reference' => 'hello world 1', 'datetime' => Time.now },
+  { 'id' => 2, 'reference' => 'hello world 2', 'datetime' => Time.now },
+  { 'id' => 3, 'reference' => 'hello world 3', 'datetime' => Time.now }
 ]
 
 # initialize Converter with Parquet GZIP compression mode
@@ -86,6 +72,64 @@ converter.to_tmpfile
 
 # convert to Arrow::Table
 pp converter.to_arrow_table
+```
+
+### Using transformers
+
+You can use transformers to apply data items transformations.
+
+From `examples/cars.rb`:
+
+```ruby
+require 'parqueteur'
+
+class Car
+  attr_reader :name, :production_year
+
+  def initialize(name, production_year)
+    @name = name
+    @production_year = production_year
+  end
+end
+
+class CarParquetConverter < Parqueteur::Converter
+  column :name, :string
+  column :production_year, :integer
+
+  transform do |car|
+    {
+      'name' => car.name,
+      'production_year' => car.production_year
+    }
+  end
+end
+
+cars = [
+  Car.new('Alfa Romeo 75', 1985),
+  Car.new('Alfa Romeo 33', 1983),
+  Car.new('Audi A3', 1996),
+  Car.new('Audi A4', 1994),
+  Car.new('BMW 503', 1956),
+  Car.new('BMW X5', 1999)
+]
+
+# initialize Converter with Parquet GZIP compression mode
+converter = CarParquetConverter.new(data, compression: :gzip)
+
+# write result to file
+pp converter.to_arrow_table
+```
+
+Output:
+```
+#<Arrow::Table:0x7fc1fb24b958 ptr=0x7fc1faedd910>
+#     name           production_year
+0     Alfa Romeo 75  1985
+1     Alfa Romeo 33  1983
+2     Audi A3        1996
+3     Audi A4        1994
+4     BMW 503        1956
+5     BMW X5         1999
 ```
 
 ### Available Types
