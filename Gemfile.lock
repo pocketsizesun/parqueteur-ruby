@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    parqueteur (1.2.0)
+    parqueteur (1.3.0)
       red-parquet (~> 5.0)
 
 GEM
