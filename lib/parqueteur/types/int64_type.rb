@@ -21,5 +21,3 @@ module Parqueteur
     end
   end
 end
-
-# when :integer

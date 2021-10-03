@@ -9,7 +9,9 @@ module Parqueteur
   module Types
     class TimestampType < Parqueteur::Type
       def build_value_array(values)
-        Arrow::TimestampArray.new(values)
+        Arrow::TimestampArray.new(
+          options.fetch(:unit, :second), values
+        )
       end
 
       def arrow_type_builder

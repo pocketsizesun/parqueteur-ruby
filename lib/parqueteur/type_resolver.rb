@@ -10,6 +10,9 @@ module Parqueteur
         bigdecimal: Parqueteur::Types::Decimal256Type,
         bigint: Parqueteur::Types::Int64Type,
         boolean: Parqueteur::Types::BooleanType,
+        date: Parqueteur::Types::Date32Type,
+        date32: Parqueteur::Types::Date64Type,
+        date64: Parqueteur::Types::Date64Type,
         decimal: Parqueteur::Types::Decimal128Type,
         decimal128: Parqueteur::Types::Decimal128Type,
         decimal256: Parqueteur::Types::Decimal256Type,
@@ -19,6 +22,9 @@ module Parqueteur
         map: Parqueteur::Types::MapType,
         string: Parqueteur::Types::StringType,
         struct: Parqueteur::Types::StructType,
+        time: Parqueteur::Types::Time32Type,
+        time32: Parqueteur::Types::Time32Type,
+        time64: Parqueteur::Types::Time64Type,
         timestamp: Parqueteur::Types::TimestampType
       }
     end
