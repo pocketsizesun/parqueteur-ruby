@@ -11,7 +11,7 @@ module Parqueteur
         bigint: Parqueteur::Types::Int64Type,
         boolean: Parqueteur::Types::BooleanType,
         date: Parqueteur::Types::Date32Type,
-        date32: Parqueteur::Types::Date64Type,
+        date32: Parqueteur::Types::Date32Type,
         date64: Parqueteur::Types::Date64Type,
         decimal: Parqueteur::Types::Decimal128Type,
         decimal128: Parqueteur::Types::Decimal128Type,
