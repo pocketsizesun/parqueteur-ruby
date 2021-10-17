@@ -22,7 +22,7 @@ data = 100.times.collect do |i|
     'id' => i,
     'my_string_array' => %w[a b c],
     'my_date' => Date.today,
-    'my_decimal' => BigDecimal('789000.5678'),
+    'my_decimal' => BigDecimal('0.03'),
     'my_int' => rand(1..10),
     'my_map' => { 'a' => 'b' },
     'my_string' => 'Hello World',
@@ -52,5 +52,6 @@ converter.to_tmpfile
 # Arrow Table
 table = converter.to_arrow_table
 table.each_record do |record|
+  # pp record['my_decimal'].to_f
   pp record.to_h
 end
