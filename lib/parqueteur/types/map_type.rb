@@ -4,18 +4,7 @@ module Parqueteur
   module Types
     class MapType < Parqueteur::Type
       def build_value_array(values)
-        builder = Arrow::MapArrayBuilder.new(arrow_type)
-        values.each do |entry|
-          builder.append_value
-          next if entry.nil?
-
-          entry.each do |k, v|
-            builder.key_builder.append(k)
-            builder.item_builder.append(v)
-          end
-        end
-
-        builder.finish
+        Arrow::MapArrayBuilder.build(arrow_type, values)
       end
 
       def arrow_type_builder

@@ -2,7 +2,7 @@
 
 module Parqueteur
   class Converter
-    DEFAULT_BATCH_SIZE = 10
+    DEFAULT_BATCH_SIZE = 100
 
     def self.inline(&block)
       Class.new(self, &block)

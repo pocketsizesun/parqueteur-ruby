@@ -1,3 +1,4 @@
+require 'securerandom'
 require 'bundler/setup'
 require 'parqueteur'
 
@@ -17,14 +18,16 @@ class FooParquetConverter < Parqueteur::Converter
   column :my_timestamp, :timestamp
 end
 
-data = 100.times.collect do |i|
+data = 1000.times.collect do |i|
   {
     'id' => i,
     'my_string_array' => %w[a b c],
     'my_date' => Date.today,
     'my_decimal' => BigDecimal('0.03'),
     'my_int' => rand(1..10),
-    'my_map' => { 'a' => 'b' },
+    'my_map' => 20.times.each_with_object({}) do |idx, hash|
+      hash["k_#{idx}"] = SecureRandom.urlsafe_base64(64)
+    end,
     'my_string' => 'Hello World',
     'my_struct' => {
       'my_struct_str' => 'Hello World',
