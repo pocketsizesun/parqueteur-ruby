@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     parqueteur (1.11.0)
-      red-parquet (~> 11.0)
+      red-parquet (> 10.0)
 
 GEM
   remote: https://rubygems.org/
